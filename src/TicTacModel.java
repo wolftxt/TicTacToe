@@ -49,7 +49,7 @@ public class TicTacModel implements Serializable{
             throw new RuntimeException("Setting incorrect y coordinate");
         }
         if (plan[x][y] != ' ') {
-            throw new RuntimeException("Position occupied");
+            System.out.println("Clicked on an occupied position");
         }
         if (mark != 'x' && mark != 'o') {
             throw new RuntimeException("Bad symbol, must be x or o");

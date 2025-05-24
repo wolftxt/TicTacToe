@@ -1,30 +1,67 @@
 
-import java.io.FileNotFoundException;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class TicTacWindow extends javax.swing.JFrame {
 
     private boolean gameOn = true;
-    
+
     private void save() {
+        JTextField input = new JTextField(10);
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Name your pattern, name must be at least 3 characters long:"));
+        panel.add(input);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Save Pattern", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (result != JOptionPane.OK_OPTION || input.getText().length() < 3) {
+            return;
+        }
         try {
-            FileOutputStream fileOutput = new FileOutputStream("tttgame");
+            String basePath = Paths.get(TicTacWindow.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().toAbsolutePath().toString();
+            FileOutputStream fileOutput = new FileOutputStream(basePath + '/' + input.getText());
             ObjectOutputStream output = new ObjectOutputStream(fileOutput);
             output.writeObject(ticTacWidget1.getModel());
             output.close();
             fileOutput.close();
-        } catch (FileNotFoundException ex) {
-            throw new RuntimeException("FileNotFoundException");
-        } catch (IOException ex) {
-            throw new RuntimeException("IOException");
+        } catch (IOException | URISyntaxException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void load() {
+        JFileChooser jfc = new JFileChooser();
+        if (jfc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        try {
+            FileInputStream fileIn = new FileInputStream(jfc.getSelectedFile());
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            TicTacModel plan = (TicTacModel) in.readObject();
+            ticTacWidget1.setModel(plan);
+            game.setPlan(plan);
+            in.close();
+            fileIn.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
         }
     }
 
     private void newGame() {
         game = new TicTacGame();
-        ticTacWidget1.setModel(game.getModel());
+        ticTacWidget1.setModel(game.getPlan());
         jLabel1.setText("It's " + game.getCurrentPlayer() + "'s turn.");
         ticTacWidget1.repaint();
     }
@@ -33,7 +70,12 @@ public class TicTacWindow extends javax.swing.JFrame {
     public TicTacWindow() {
         initComponents();
         game = new TicTacGame();
-        ticTacWidget1.setModel(game.getModel());
+        ticTacWidget1.setModel(game.getPlan());
+        this.addWindowFocusListener(new WindowAdapter() {
+            public void windowGainedFocus(WindowEvent e) {
+                ticTacWidget1.requestFocusInWindow();
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -49,15 +91,15 @@ public class TicTacWindow extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("It's x's turn");
         jLabel1.setToolTipText("");
-        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel1MouseClicked(evt);
-            }
-        });
 
         ticTacWidget1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 ticTacWidget1MouseReleased(evt);
+            }
+        });
+        ticTacWidget1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                ticTacWidget1KeyReleased(evt);
             }
         });
 
@@ -101,9 +143,16 @@ public class TicTacWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ticTacWidget1MouseReleased
 
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-        save();
-    }//GEN-LAST:event_jLabel1MouseClicked
+    private void ticTacWidget1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ticTacWidget1KeyReleased
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_S -> {
+                save();
+            }
+            case KeyEvent.VK_L -> {
+                load();
+            }
+        }
+    }//GEN-LAST:event_ticTacWidget1KeyReleased
 
     public static void main(String args[]) {
         try {

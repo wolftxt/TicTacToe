@@ -6,9 +6,14 @@ public class TicTacGame {
         this.plan = new TicTacModel(25, 25);
     }
 
-    public TicTacModel getModel() {
+    public TicTacModel getPlan() {
         return plan;
     }
+
+    public void setPlan(TicTacModel plan) {
+        this.plan = plan;
+    }
+    
     // Different methods to check for a win
     /* public char getWinner() {
         int spaceCount = 0;
