@@ -1,8 +1,7 @@
 
 import java.io.Serializable;
 
-
-public class TicTacModel implements Serializable{
+public class TicTacModel implements Serializable {
 
     private char[][] plan;
     private int height;
@@ -49,7 +48,8 @@ public class TicTacModel implements Serializable{
             throw new RuntimeException("Setting incorrect y coordinate");
         }
         if (plan[x][y] != ' ') {
-            System.out.println("Clicked on an occupied position");
+            System.err.println("Clicked on an occupied position");
+            return;
         }
         if (mark != 'x' && mark != 'o') {
             throw new RuntimeException("Bad symbol, must be x or o");
