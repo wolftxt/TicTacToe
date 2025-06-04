@@ -1,4 +1,6 @@
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -9,11 +11,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 public class TicTacWindow extends javax.swing.JFrame {
 
@@ -60,10 +67,43 @@ public class TicTacWindow extends javax.swing.JFrame {
     }
 
     private void newGame() {
-        game = new TicTacGame();
-        ticTacWidget1.setModel(game.getPlan());
-        jLabel1.setText("It's " + game.getCurrentPlayer() + "'s turn.");
-        ticTacWidget1.repaint();
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Set size:");
+        JPanel popup = new JPanel();
+        popup.setLayout(new BoxLayout(popup, BoxLayout.Y_AXIS));
+
+        JPanel row1 = new JPanel(new FlowLayout());
+        JLabel label1 = new JLabel("Width: ");
+        JSpinner spinner1 = new JSpinner(new SpinnerNumberModel(25, 5, 100, 1));
+        row1.add(label1);
+        row1.add(spinner1);
+        popup.add(row1);
+
+        JPanel row2 = new JPanel(new FlowLayout());
+        JLabel label2 = new JLabel("Height: ");
+        JSpinner spinner2 = new JSpinner(new SpinnerNumberModel(25, 5, 100, 1));
+        row2.add(label2);
+        row2.add(spinner2);
+        popup.add(row2);
+
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton button = new JButton("Submit");
+        button.addActionListener(e -> {
+            int width = (int) spinner1.getValue();
+            int height = (int) spinner2.getValue();
+            game = new TicTacGame(width, height);
+            ticTacWidget1.setModel(game.getPlan());
+            jLabel1.setText("It's " + game.getCurrentPlayer() + "'s turn.");
+            ticTacWidget1.repaint();
+            dialog.dispose();
+        });
+        wrapper.add(button);
+        popup.add(wrapper);
+
+        dialog.add(popup);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
     private TicTacGame game;
 
@@ -79,7 +119,7 @@ public class TicTacWindow extends javax.swing.JFrame {
     }
 
     private void showHelp() {
-        JOptionPane.showMessageDialog(this, "Welcome to TicTacToe!\nKeybinds:\nh - show help (this popup)\nl - load game\ns - save game");
+        JOptionPane.showMessageDialog(this, "Welcome to TicTacToe!\nKeybinds:\nh - show help (this popup)\nn - start a new game\nl - load game\ns - save game");
     }
 
     @SuppressWarnings("unchecked")
@@ -157,6 +197,9 @@ public class TicTacWindow extends javax.swing.JFrame {
             }
             case KeyEvent.VK_H -> {
                 showHelp();
+            }
+            case KeyEvent.VK_N -> {
+                newGame();
             }
         }
     }//GEN-LAST:event_ticTacWidget1KeyReleased
