@@ -79,7 +79,7 @@ public class TicTacWindow extends javax.swing.JFrame {
     }
 
     private void showHelp() {
-        JOptionPane.showMessageDialog(this, "Welcome to TicTacToe!\nKeybinds:\nl - load game\ns - save game");
+        JOptionPane.showMessageDialog(this, "Welcome to TicTacToe!\nKeybinds:\nh - show help (this popup)\nl - load game\ns - save game");
     }
 
     @SuppressWarnings("unchecked")
@@ -154,6 +154,9 @@ public class TicTacWindow extends javax.swing.JFrame {
             }
             case KeyEvent.VK_L -> {
                 load();
+            }
+            case KeyEvent.VK_H -> {
+                showHelp();
             }
         }
     }//GEN-LAST:event_ticTacWidget1KeyReleased

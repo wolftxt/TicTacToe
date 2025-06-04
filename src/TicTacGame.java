@@ -1,9 +1,14 @@
+
 public class TicTacGame {
 
     private TicTacModel plan;
 
     public TicTacGame() {
-        this.plan = new TicTacModel(25, 25);
+        this(25, 25);
+    }
+
+    public TicTacGame(int width, int height) {
+        this.plan = new TicTacModel(width, height);
     }
 
     public TicTacModel getPlan() {
@@ -13,7 +18,7 @@ public class TicTacGame {
     public void setPlan(TicTacModel plan) {
         this.plan = plan;
     }
-    
+
     // Different methods to check for a win
     /* public char getWinner() {
         int spaceCount = 0;
@@ -257,7 +262,7 @@ public class TicTacGame {
             return '!';
         }
         return '?';
-    } 
+    }
 
     public boolean turn(int x, int y) {
         plan.setMarkAt(x, y, getCurrentPlayer());
